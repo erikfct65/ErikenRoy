@@ -2,8 +2,8 @@ name: Curaçao Deal Checker
 
 on:
   schedule:
-    # AANGEPAST: Voert het script nu elke 5 minuten uit voor testdoeleinden.
-    - cron: '*/5 * * * *'
+    # Voert het script elke dag uit om 09:00 UTC (dat is 10:00 of 11:00 in NL)
+    - cron: '0 9 * * *'
   workflow_dispatch: # Dit voegt een knop toe om het handmatig te starten
 
 jobs:
