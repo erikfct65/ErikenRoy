@@ -1,0 +1,30 @@
+name: Curaçao Deal Checker
+
+on:
+  schedule:
+    # AANGEPAST: Voert het script nu elke 5 minuten uit voor testdoeleinden.
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Dit voegt een knop toe om het handmatig te starten
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: playwright install chromium
+
+      - name: Run the deal checker script
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: python curacao_bot.py
