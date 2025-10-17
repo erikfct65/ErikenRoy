@@ -2,15 +2,18 @@ import time
 from playwright.sync_api import sync_playwright
 import requests
 from bs4 import BeautifulSoup
-import re
+import os # Nodig om de webhook URL veilig in te lezen
 
 # --- CONFIGURATIE ---
-WEBHOOK_URL = "https://discord.com/api/webhooks/1428349084304932934/GTcWv8tSDZHdFOusnzv9zXImXeJ2O7ND02vpmbVCW02Xs_P_3byXj-rTgYHvFQdivEH3"
-MAX_PRICE = 1015.00
-INTERVAL_SECONDS = 900
+# De webhook URL wordt nu veilig ingelezen uit de "Secrets" van GitHub
+WEBHOOK_URL = os.environ.get('DISCORD_WEBHOOK')
+MAX_PRICE = 1200.00
 found_deals = set()
 
 def send_discord_notification(message):
+    if not WEBHOOK_URL:
+        print("FOUT: DISCORD_WEBHOOK is niet ingesteld in GitHub Secrets!")
+        return
     try:
         requests.post(WEBHOOK_URL, json={"content": message}, timeout=10)
         print("Notificatie succesvol verzonden.")
@@ -22,23 +25,20 @@ def scrape_corendon(p):
     print(f"\n[{site_name}] Start check...")
     browser = None
     try:
-        # --- AANGEPAST: De browser is nu onzichtbaar ---
-        browser = p.chromium.launch(headless=True) 
-        context = browser.new_context(user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36')
+        browser = p.chromium.launch(headless=True) # MOET True zijn voor GitHub Actions
+        context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36')
         page = context.new_page()
 
         url = "https://www.corendon.nl/curacao?departDate=%5B260201,260429%5D&psort=2&tripDuration=10-%2a"
         page.goto(url, timeout=60000)
         
-        # De cookie-klik is mogelijk niet nodig, maar we laten hem erin voor de zekerheid.
-        # Als hij de knop niet vindt na 5 seconden, gaat hij gewoon door.
         try:
             cookie_selector = "button:has-text('Accepteren')"
-            page.click(cookie_selector, timeout=5000)
+            page.click(cookie_selector, timeout=15000)
             print(f"[{site_name}] Cookie banner weggeklikt.")
             page.wait_for_selector(cookie_selector, state='hidden', timeout=5000)
         except Exception:
-            print(f"[{site_name}] Geen cookie banner gevonden, ga direct door met zoeken naar deals.")
+            print(f"[{site_name}] Geen cookie banner gevonden of kon niet klikken, ga door.")
 
         results_selector = "article.cor-sr-item"
         page.wait_for_selector(results_selector, timeout=30000)
@@ -90,16 +90,10 @@ def scrape_corendon(p):
     finally:
         if browser:
             browser.close()
-            print(f"[{site_name}] Check voltooid, browser sessie afgesloten.")
+            print(f"[{site_name}] Browser sessie afgesloten.")
 
-# --- HOOFDPROGRAMMA ---
 if __name__ == "__main__":
-    print(f"--- Definitieve Curaçao Deal Bot (Onzichtbare Modus - Max €{MAX_PRICE}) ---")
-    try:
-        with sync_playwright() as p:
-            while True:
-                scrape_corendon(p)
-                print(f"\n--- Wachten voor {int(INTERVAL_SECONDS / 60)} minuten... ---")
-                time.sleep(INTERVAL_SECONDS)
-    except KeyboardInterrupt:
-        print("\n--- Script gestopt door gebruiker. ---")
+    print("--- Start Curaçao Deal Bot (GitHub Actions) ---")
+    with sync_playwright() as p:
+        scrape_corendon(p)
+    print("--- Check voltooid ---")
