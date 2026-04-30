@@ -22,14 +22,16 @@ def send_discord_notification(message):
 
 def scrape_corendon(p):
     site_name = "Corendon"
-    print(f"\n[{site_name}] Start check...")
+    print(f"\n[{site_name}] Start check voor september 2026...")
     browser = None
     try:
         browser = p.chromium.launch(headless=True) # MOET True zijn voor GitHub Actions
         context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36')
         page = context.new_page()
 
-        url = "https://www.corendon.nl/curacao?departDate=%5B260201,260429%5D&psort=2&tripDuration=10-%2a"
+        # DE NIEUWE URL VOOR SEPTEMBER 2026
+        url = "https://www.corendon.nl/curacao?departDate=%5B260901,260930%5D&psort=2&tripDuration=10-%2a"
+        
         page.goto(url, timeout=60000)
         
         try:
@@ -71,7 +73,7 @@ def scrape_corendon(p):
                     if deal_id not in found_deals:
                         print(f"DEAL GEVONDEN: {name} op {departure_date} voor €{price_pp:.2f}")
                         message = (
-                            f"🎉 **DEAL GEVONDEN!** 🎉\n\n"
+                            f"🎉 **DEAL GEVONDEN (SEPT '26)!** 🎉\n\n"
                             f"**Hotel:** {name}\n"
                             f"**Vertrekdatum:** {departure_date}\n"
                             f"**Reisduur:** {duration_text}\n"
@@ -93,7 +95,7 @@ def scrape_corendon(p):
             print(f"[{site_name}] Browser sessie afgesloten.")
 
 if __name__ == "__main__":
-    print("--- Start Curaçao Deal Bot (GitHub Actions) ---")
+    print("--- Start Curaçao Deal Bot (September 2026) ---")
     with sync_playwright() as p:
         scrape_corendon(p)
     print("--- Check voltooid ---")
