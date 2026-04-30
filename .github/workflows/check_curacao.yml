@@ -25,4 +25,5 @@ jobs:
       - name: Start de bot
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: python Curacaodeal.py
+        run: python curacao_bot.py
+
