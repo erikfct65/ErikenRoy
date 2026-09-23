@@ -2,7 +2,7 @@ name: Curaçao Deal Check
 
 on:
   schedule:
-    - cron: '0 9,17 * * *' # Elke dag om 9u en 17u
+    - cron: '0 10,15 * * *' # Draait om ~09:00 en ~17:00 Nederlandse zomertijd
   workflow_dispatch: # Zorgt dat je de knop "Run workflow" krijgt
 
 jobs:
@@ -20,10 +20,9 @@ jobs:
       - name: Installeren tools
         run: |
           pip install playwright requests beautifulsoup4
-          playwright install chromium
+          playwright install --with-deps chromium
 
       - name: Start de bot
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: python curacao_bot.py
-
