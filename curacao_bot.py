@@ -29,7 +29,7 @@ def scrape_corendon(p):
         page = context.new_page()
 
         # Link voor maart en april 2027, gesorteerd op prijs
-        url = "https://www.corendon.nl/curacao?departDate=%5B270301,270430%5D&psort=2&tripDuration=10-%2a"
+        url = "https://www.corendon.nl/curacao?departDate=%5B270201,270330%5D&psort=2&tripDuration=10-%2a"
         page.goto(url, timeout=60000)
         
         try:
