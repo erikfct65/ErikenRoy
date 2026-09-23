@@ -21,15 +21,15 @@ def send_discord_notification(message):
 
 def scrape_corendon(p):
     site_name = "Corendon"
-    print(f"\n[{site_name}] Start check voor September 2026...")
+    print(f"\n[{site_name}] Start check voor maart/april 2027...")
     browser = None
     try:
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36')
         page = context.new_page()
 
-        # Link voor september 2026, gesorteerd op prijs
-        url = "https://www.corendon.nl/curacao?departDate=%5B260901,260930%5D&psort=2&tripDuration=10-%2a"
+        # Link voor maart en april 2027, gesorteerd op prijs
+        url = "https://www.corendon.nl/curacao?departDate=%5B270301,270430%5D&psort=2&tripDuration=10-%2a"
         page.goto(url, timeout=60000)
         
         try:
@@ -69,7 +69,7 @@ def scrape_corendon(p):
                     
                     if deal_id not in found_deals:
                         message = (
-                            f"🎉 **DEAL GEVONDEN (SEPT '26)!** 🎉\n\n"
+                            f"🎉 **DEAL GEVONDEN (MAART/APRIL '27)!** 🎉\n\n"
                             f"**Hotel:** {name}\n"
                             f"**Vertrekdatum:** {departure_date}\n"
                             f"**Reisduur:** {duration_text}\n"
